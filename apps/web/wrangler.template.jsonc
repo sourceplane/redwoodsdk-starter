@@ -1,0 +1,34 @@
+// What the Cloudflare Vite plugin BUILDS from (and `vite dev` runs): the
+// Worker's source entry, its compatibility and its bindings. What deploys is
+// wrangler.deploy.jsonc, rendered from wrangler.deploy.template.jsonc beside
+// this; keep the two in step (tests/web's wrangler-config test holds them to
+// it).
+//
+// Rendered by tooling/wire: edit the template, never the render.
+//   - committed: the render from wiring.fixture.json (`pnpm run wire:fixture`),
+//     a placeholder database id. `vite dev` and the composition's structure
+//     check read the renders, so they have to exist without a build.
+//   - deployed: each lane re-renders it in its own job tree, before the build,
+//     from the wiring document the `cloudflare-d1` Terraform root
+//     lease-publishes (WIRING_CLOUDFLARE_D1_<ENV>); dev, which no root applies
+//     to and which only verifies, from the fixture.
+// The workers-assets composition deploys one environment per job with no
+// wrangler `--env`, and names the Worker `<workerName>-<env>` itself.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "redwoodsdk-starter-web",
+  "main": "src/worker.tsx",
+  "compatibility_date": "2025-08-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  // The notes' database — Cloudflare D1, in place of the starter's passkey
+  // addon (whose sessions and credentials live in Durable Objects).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "@@wiring(cloudflare-d1/__ENV__:d1_database_name)@@",
+      "database_id": "@@wiring(cloudflare-d1/__ENV__:d1_database_id)@@"
+    }
+  ]
+}

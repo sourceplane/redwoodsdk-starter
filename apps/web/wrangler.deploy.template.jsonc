@@ -1,0 +1,31 @@
+// What `wrangler deploy` ships: the Worker and the static assets `vite build`
+// emitted, with the settings and bindings of wrangler.template.jsonc beside it.
+//
+// wrangler.template.jsonc is what the Cloudflare Vite plugin BUILDS from (its
+// `main` is the source entry). The plugin then writes a deployable copy,
+// dist/worker/wrangler.json — but that file exists only after a build, and
+// the deploy lanes check that the config they deploy exists BEFORE they build
+// (and stage each job without dist/). So the deploy names this file's render,
+// which says what the generated one says: the built entry, no re-bundling,
+// the build's chunks as ES modules, the client output as assets.
+//
+// Rendered by tooling/wire exactly as wrangler.template.jsonc is; keep the two
+// in step (tests/web's wrangler-config test fails when they disagree).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "redwoodsdk-starter-web",
+  "main": "./dist/worker/index.js",
+  "no_bundle": true,
+  "rules": [{ "type": "ESModule", "globs": ["**/*.js", "**/*.mjs"] }],
+  "compatibility_date": "2025-08-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./dist/client", "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "@@wiring(cloudflare-d1/__ENV__:d1_database_name)@@",
+      "database_id": "@@wiring(cloudflare-d1/__ENV__:d1_database_id)@@"
+    }
+  ]
+}

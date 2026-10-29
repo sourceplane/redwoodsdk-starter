@@ -1,0 +1,21 @@
+// GENERATED from wrangler.template.jsonc by tooling/wire — edit the
+// template, not this file. The committed copy is the fixture render
+// (`pnpm run wire:fixture`); every Orun lane renders its own environment.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "redwoodsdk-starter-web",
+  "main": "src/worker.tsx",
+  "compatibility_date": "2025-08-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  // The notes' database — Cloudflare D1, in place of the starter's passkey
+  // addon (whose sessions and credentials live in Durable Objects).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "stg-redwoodsdk-starter-stage",
+      "database_id": "00000000-0000-0000-0000-000000000001"
+    }
+  ]
+}
