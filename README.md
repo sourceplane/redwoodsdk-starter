@@ -8,7 +8,9 @@ with Static Assets**, built by Vite through the
 as RedwoodSDK always builds, with a first table in a **Cloudflare D1**
 database provisioned by Terraform through
 [Orun](https://github.com/sourceplane/orun) and its schema applied by
-migrations, and being packaged as an **Orun baseline** (RW4).
+migrations, and packaged as an **Orun baseline**: one command takes a new
+product from nothing to live on stage and prod, in its own repository, under
+its own name — in ONE landing.
 
 The starter is upstream's (MIT, © 2025 RedwoodJS Inc; `apps/web/LICENSE`):
 its document, security headers, client entry and welcome page are kept as
@@ -24,6 +26,43 @@ is since its one-landing bootstrap, on the shape of
 its migrations, one Worker). See
 [`specs/epics/redwoodsdk-starter`](specs/epics/redwoodsdk-starter/README.md)
 for the design, the milestones and the as-built status.
+
+## Instantiating a product
+
+```bash
+git clone --depth 1 --branch <baseline-tag> https://github.com/sourceplane/redwoodsdk-starter
+cd redwoodsdk-starter
+orun new --blueprint repo-blueprint.yaml --out ~/sites/acme-notes --run-hooks --resume \
+  --set reponame=acme-notes --set productname="Acme Notes" \
+  --set githuborg=acme-inc --set subdomain=<workers-dev-subdomain>
+```
+
+Or, once the platform's registry lists it, from the Orun console (Baselines →
+`redwoodsdk-starter` → Build). Two phases: **`01-product`** creates the
+repository and lands the whole product as ONE pull request — intent, CI,
+tooling, the D1 root, the migrations, the site and its tests — and one
+convergence, per environment, applies the D1 database, then its migrations,
+then deploys the site with its id; **`02-docs`** records the live deployment
+from probed facts. **[BOOTSTRAP.md](BOOTSTRAP.md)** is the operator guide;
+[docs/phases/](docs/phases/README.md) has a page per phase.
+
+The new repository receives the **product only** — the app, its D1 root, its
+migrations and their runner, its tests, its CI, its tooling, a README of its
+own and its operating contract — renamed throughout to the product's name,
+repository, Cloudflare Worker and database names. None of this repository's
+machinery ships.
+
+| What makes it a baseline | Where |
+|---|---|
+| The console card (inputs, secrets, programme) | `blueprint.yaml` |
+| The build document (modules, phases, hooks) | `repo-blueprint.yaml` |
+| This tree's identity, and the bootstrap's task contracts | `.baseline/` |
+| The rename engine | `tooling/rebrand/rebrand.mjs` |
+| The bootstrap's helpers (deferrals, redeploy marker, work-tree strip) | `tooling/bootstrap/` |
+| The deployment-record renderer | `hooks/render-deployment-docs.sh` |
+| The product's README and context pack | `.baseline/product/README.md`, `ai/context/` |
+| The baseline's tests: contract, wiring, leak, offline bootstrap, end to end | `testing/`, `.github/workflows/baseline.yml` |
+| Cutting a `baseline-vN` tag | `.github/workflows/tag.yml` |
 
 ## What is here (the product)
 
@@ -68,7 +107,7 @@ pnpm --filter @app/web preview            # wrangler dev over the built Worker, 
 | No database in the starter (`ensure-deploy-env` creates a D1 database on first release when the code reads `env.DB`) | `infra/terraform/cloudflare-d1`, applied by Orun before the migrations and the Worker, bound as `DB` |
 | A table created by hand | `packages/db/src/migrations/010_notes`, applied by `infra/db-migrate` before the Worker deploys |
 | `npm run dev` with a local D1 | `pnpm --filter @app/web dev`, wrangler's local D1 (`db:migrate:local` creates the table) |
-| `npx create-rwsdk my-project-name` | an Orun baseline (RW4): a new repository, branded, deployed |
+| `npx create-rwsdk my-project-name` | `orun new --blueprint repo-blueprint.yaml` — a new repository, branded, deployed |
 
 ## How the database reaches the Worker
 
@@ -93,12 +132,8 @@ disagree.
 
 ## CI
 
-`.github/workflows/ci.yml` is the Orun pipeline: `orun plan --changed`,
-then one job per lane. A pull request runs the verify lanes (packages
-type-checked, linted, tested and built, both test suites, the site built and
-dry-deployed per environment); a merge applies the D1 database, migrates it,
-then deploys stage → prod. It plans nothing while `intent.yaml` names the
-placeholder workspace `ws_CHANGE_ME`, as this repository does. A manual run
-(Orunbase's Deploy button, or Run workflow on `main`) plans the environment
-and components it names under the push-to-main trigger, so they deploy as a
-merge deploys them.
+| Workflow | What it runs | Ships to a product |
+|---|---|---|
+| `ci.yml` | the Orun pipeline, and the only workflow a product carries: `orun plan --changed`, then one job per lane. A pull request runs the verify lanes (packages type-checked, linted, tested and built, both test suites, the site built and dry-deployed per environment), except the bootstrap's own landings (`orun/BASE-*`), where `plan` alone is the check; a merge applies the D1 database, migrates it, then deploys stage → prod. It plans nothing while `intent.yaml` names the placeholder workspace `ws_CHANGE_ME`, as this repository does. A manual run (Orunbase's Deploy button, or Run workflow on `main`) plans the environment and components it names under the push-to-main trigger, so they deploy as a merge deploys them | yes |
+| `baseline.yml` | the baseline's own tiers: contract tests, the wiring path, the blueprint read by the pinned orun, the leak gate, the offline bootstrap with the product's own plan, the product built in the job tree, migrated, dry-deployed and served | no |
+| `tag.yml` | cuts a `baseline-vN` tag (manual) | no |
