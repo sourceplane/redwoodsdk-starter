@@ -7,8 +7,8 @@ starter is listed as it lands.
 |---|---|
 | RW0 — the spec | ✅ merged (sourceplane/redwoodsdk-starter#1) |
 | RW1 — the RedwoodSDK app on Workers | ✅ merged (sourceplane/redwoodsdk-starter#2) |
-| RW2 — the D1 database | In progress (sourceplane/redwoodsdk-starter#3) |
-| RW3 — ready to instantiate | Not started |
+| RW2 — the D1 database | ✅ merged (sourceplane/redwoodsdk-starter#3) |
+| RW3 — ready to instantiate | In progress (sourceplane/redwoodsdk-starter#4) |
 | RW4 — a baseline | Not started |
 
 ## Departures from upstream (`redwoodjs/sdk › starter` at `c221073`)
@@ -26,6 +26,3 @@ starter is listed as it lands.
 | `dev:init`, `generate`, `release`, `worker:run`, `check`, `types` scripts | `dev`, `build`, `preview`, `typecheck`, `lint`, `wire:fixture`, `db:migrate:local` | The pipeline builds, checks and deploys; `dev:init` would run `npm` inside a pnpm workspace on a fresh checkout |
 | `worker-configuration.d.ts` generated with `ASSETS` | Written by hand with `ASSETS` and `DB` | The binding the app reads |
 | The passkey addon (optional) | Not included | Durable Objects (risk RW-B) |
-
-
-The README's mapping table and the full account land with RW3.

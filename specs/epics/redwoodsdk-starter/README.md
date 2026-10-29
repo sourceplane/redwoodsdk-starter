@@ -12,7 +12,7 @@ configs, the D1 root, the migrations, tests and the deploy contract.
 
 | Field | Value |
 |-------|-------|
-| Status | In progress — RW2 (#3); merged: RW0 (#1), RW1 (#2) |
+| Status | In progress — RW3 (#4); merged: RW0 (#1), RW1 (#2), RW2 (#3) |
 | Cluster | **RW** (RW0–RW4) |
 | Owner(s) | `apps/web` · `infra/terraform/cloudflare-d1` · `packages/db` · `infra/db-migrate` |
 | Builds on | `hono-api` (the catalogue's fork: its tooling and tests) on `turso-starter`'s shape (one D1 root, its migrations, one Worker with Static Assets); `react-router-postgres`'s build-and-deploy config pair for the Cloudflare Vite plugin |

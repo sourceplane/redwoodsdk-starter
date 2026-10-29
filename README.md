@@ -1,16 +1,29 @@
 # redwoodsdk-starter
 
-An Orunbase starter baseline, being built: RedwoodSDK's
-[starter](https://github.com/redwoodjs/sdk/tree/main/starter) (React Server
-Components on Workers) with D1, on the Cirrus baseline conventions — in
-place of the starter's passkey addon (Durable Objects, which Orun has no
-composition for), a first table in Cloudflare D1.
+RedwoodSDK's [starter](https://github.com/redwoodjs/sdk/tree/main/starter)
+— the framework's welcome page, with React Server Components, server
+functions and client-side navigation — running on **one Cloudflare Worker
+with Static Assets**, built by Vite through the
+[Cloudflare Vite plugin](https://developers.cloudflare.com/workers/vite-plugin/)
+as RedwoodSDK always builds, with a first table in a **Cloudflare D1**
+database provisioned by Terraform through
+[Orun](https://github.com/sourceplane/orun) and its schema applied by
+migrations, and being packaged as an **Orun baseline** (RW4).
 
-Upstream: https://github.com/redwoodjs/sdk/tree/main/starter (MIT, © 2025
-RedwoodJS Inc).
-
-It lands in five reviewed steps (RW0–RW4); the plan, the design and the
-risks are in [`specs/epics/redwoodsdk-starter`](specs/epics/redwoodsdk-starter/README.md).
+The starter is upstream's (MIT, © 2025 RedwoodJS Inc; `apps/web/LICENSE`):
+its document, security headers, client entry and welcome page are kept as
+written. Two things change. RedwoodSDK's **passkey addon is left out** — it
+keeps its sessions and WebAuthn credentials in Durable Objects, which Orun has
+no composition for — and **a D1 database is added instead**: the home page, a
+server component, reads a `notes` table through the `DB` binding, and two
+server functions write it, so the starter shows a database end to end. What
+the baseline adds is everything needed to make a copy of it somebody else's,
+built the way [cirrus-baseline](https://github.com/sourceplane/cirrus-baseline)
+is since its one-landing bootstrap, on the shape of
+[turso-starter](https://github.com/sourceplane/turso-starter) (one D1 root,
+its migrations, one Worker). See
+[`specs/epics/redwoodsdk-starter`](specs/epics/redwoodsdk-starter/README.md)
+for the design, the milestones and the as-built status.
 
 ## What is here (the product)
 
@@ -26,7 +39,6 @@ risks are in [`specs/epics/redwoodsdk-starter`](specs/epics/redwoodsdk-starter/R
 | The schema (migrations) and the runner that applies them over the D1 REST API | `packages/db`, run by `infra/db-migrate` |
 | The wrangler renderer, the migration helpers | `tooling/wire`, `tooling/migrations` |
 | Tests | `tests/web` (the notes table, the server functions and the health route against an in-memory D1; the two wrangler configs), `tests/db` (the migrations through the runner, into real SQLite) |
-
 
 ## Getting started
 
@@ -45,6 +57,18 @@ pnpm --filter @app/web dev                # http://localhost:5173 — vite dev, 
 pnpm --filter @app/web preview            # wrangler dev over the built Worker, same local D1
 ```
 
+## How it maps to RedwoodSDK's own setup
+
+| RedwoodSDK starter | Here |
+|---|---|
+| `vite build` with `rwsdk/vite` and `@cloudflare/vite-plugin` | The same build (`apps/web/vite.config.mts`): the Worker in `dist/worker`, the browser's assets in `dist/client` |
+| `wrangler.jsonc` with `name: "__change_me__"` | `wrangler.template.jsonc` (what the Vite plugin builds from) and `wrangler.deploy.template.jsonc` (what wrangler deploys: the built Worker, `no_bundle`, the client output as assets), both rendered per environment; the Worker is `<repo>-web-{dev,stage,prod}` |
+| `pnpm release` (`rw-scripts ensure-deploy-env`, `wrangler deploy`) | Orun applies the database, migrates it and deploys `<repo>-web-{stage,prod}` on merge to `main`; the welcome page's deploy card says so |
+| The passkey addon (`rwsdk addon passkey`: sessions and credentials in Durable Objects) | Left out — Durable Objects have no Orun composition |
+| No database in the starter (`ensure-deploy-env` creates a D1 database on first release when the code reads `env.DB`) | `infra/terraform/cloudflare-d1`, applied by Orun before the migrations and the Worker, bound as `DB` |
+| A table created by hand | `packages/db/src/migrations/010_notes`, applied by `infra/db-migrate` before the Worker deploys |
+| `npm run dev` with a local D1 | `pnpm --filter @app/web dev`, wrangler's local D1 (`db:migrate:local` creates the table) |
+| `npx create-rwsdk my-project-name` | an Orun baseline (RW4): a new repository, branded, deployed |
 
 ## How the database reaches the Worker
 
@@ -67,3 +91,14 @@ step checks the config it deploys exists before it builds;
 `testing/wire.test.sh` and `tests/web` fail if a render and its template
 disagree.
 
+## CI
+
+`.github/workflows/ci.yml` is the Orun pipeline: `orun plan --changed`,
+then one job per lane. A pull request runs the verify lanes (packages
+type-checked, linted, tested and built, both test suites, the site built and
+dry-deployed per environment); a merge applies the D1 database, migrates it,
+then deploys stage → prod. It plans nothing while `intent.yaml` names the
+placeholder workspace `ws_CHANGE_ME`, as this repository does. A manual run
+(Orunbase's Deploy button, or Run workflow on `main`) plans the environment
+and components it names under the push-to-main trigger, so they deploy as a
+merge deploys them.
