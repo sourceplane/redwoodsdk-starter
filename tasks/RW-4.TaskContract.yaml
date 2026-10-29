@@ -1,0 +1,14 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: RW-4
+  title: "Ready to instantiate"
+spec:
+  goal: A reader can run, test, preview and deploy the starter from its README, and the as-built status records every departure from upstream
+  affects:
+    - README.md
+    - specs
+  doneWhen:
+    - the README says how to run, test, preview and deploy it, and how RedwoodSDK's own setup maps to this one
+    - IMPLEMENTATION-STATUS lists every departure from the upstream starter
+  gates: []

@@ -1,0 +1,40 @@
+# The epic's declaration. metadata.name equals the directory name; metadata.key
+# is the task-key prefix this epic reserves (RW → RW-1, RW-2, …). Owner, target
+# date and health are the platform's — never written here.
+apiVersion: orun.io/v1
+kind: Epic
+metadata:
+  name: redwoodsdk-starter
+  key: RW
+spec:
+  title: "RedwoodSDK's starter on Cloudflare Workers, with D1"
+  summary: "RedwoodSDK's starter (redwoodjs/sdk › starter) — the framework's welcome page with React Server Components, server functions and client navigation — runs on one Cloudflare Worker with Static Assets, built by Vite through the Cloudflare Vite plugin as upstream builds it; RedwoodSDK's passkey addon is left out (its sessions and credentials live in Durable Objects, which Orun has no composition for) and a D1 database is added in its place — a notes table the home page reads in a server component and writes through server functions, its schema a migration applied before the Worker deploys — and it becomes an Orun baseline that takes a new site from nothing to live on stage and prod in one landing."
+  state: started
+  milestones:
+    - name: "RW0 — the spec"
+      exitCriteria:
+        - "the repository carries its intent, CI, tooling and spec index, and this doc set and the task contracts are on main"
+      tasks: [RW-1]
+    - name: "RW1 — the RedwoodSDK app on Workers"
+      exitCriteria:
+        - "apps/web is the upstream starter on rwsdk 1.7.5, built by Vite and the Cloudflare Vite plugin into one Worker (dist/worker) with Static Assets (dist/client), its dependencies pinned as upstream pins them"
+        - "the home page reads a notes table through the DB binding in a server component, and two server functions add and remove a note; with no table it says how to migrate, and /api/health answers 503"
+        - "the Worker deploys from wrangler.deploy.jsonc, which says what the plugin's generated config says; tests/web holds the two configs to their templates and to each other"
+        - "`pnpm typecheck`, `pnpm lint`, `pnpm test` and `pnpm build` are green"
+      tasks: [RW-2]
+    - name: "RW2 — the D1 database"
+      exitCriteria:
+        - "infra/terraform/cloudflare-d1 provisions one database per deployed environment and lease-publishes its wiring document"
+        - "packages/db holds the schema as migrations (010_notes) and infra/db-migrate applies them over the D1 REST API between the apply and the Worker's deploy, enforced on main and advisory on a pull request"
+      tasks: [RW-3]
+    - name: "RW3 — ready to instantiate"
+      exitCriteria:
+        - "the README says how to run, test, preview and deploy it, and how RedwoodSDK's own setup maps to this one"
+        - "the as-built status records every departure from the upstream starter"
+      tasks: [RW-4]
+    - name: "RW4 — a baseline"
+      exitCriteria:
+        - "blueprint.yaml (the console card) and repo-blueprint.yaml (the build) take a new site from nothing to live on stage and prod in one landing, then record it"
+        - "a site built from it carries the site only, renamed throughout to its own name, repository, Worker and databases, with RedwoodSDK's own names (rwsdk, RedwoodSDK) and the starter's MIT licence intact"
+        - "Baseline CI is green: contract tests, generated component docs, the blueprint read by the pinned orun, the leak gate, the offline bootstrap and the end-to-end tier"
+      tasks: [RW-5]

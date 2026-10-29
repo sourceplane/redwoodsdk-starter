@@ -1,0 +1,20 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: RW-2
+  title: "The RedwoodSDK app on Workers"
+spec:
+  goal: apps/web is RedwoodSDK's starter on one Cloudflare Worker with Static Assets, built by Vite and the Cloudflare Vite plugin, with a notes table in D1 read by the home page and written by two server functions, and the schema and its runner in packages/db
+  affects:
+    - apps/web
+    - packages/db
+    - tests/web
+    - tests/db
+    - tooling/eslint
+    - pnpm-lock.yaml
+    - README.md
+  doneWhen:
+    - pnpm typecheck, pnpm lint, pnpm test and pnpm build are green
+    - wrangler dev over the build shows the migrations notice and answers /api/health 503 before the schema, and a note round-trips through the server functions after it
+    - tests/web holds wrangler.jsonc and wrangler.deploy.jsonc to their templates and to each other
+  gates: []
