@@ -9,7 +9,7 @@ metadata:
 spec:
   title: "RedwoodSDK's starter on Cloudflare Workers, with D1"
   summary: "RedwoodSDK's starter (redwoodjs/sdk › starter) — the framework's welcome page with React Server Components, server functions and client navigation — runs on one Cloudflare Worker with Static Assets, built by Vite through the Cloudflare Vite plugin as upstream builds it; RedwoodSDK's passkey addon is left out (its sessions and credentials live in Durable Objects, which Orun has no composition for) and a D1 database is added in its place — a notes table the home page reads in a server component and writes through server functions, its schema a migration applied before the Worker deploys — and it becomes an Orun baseline that takes a new site from nothing to live on stage and prod in one landing."
-  state: started
+  state: completed
   milestones:
     - name: "RW0 — the spec"
       exitCriteria:

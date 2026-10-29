@@ -1,15 +1,15 @@
 # Implementation status — redwoodsdk-starter
 
 As-built, kept distinct from the design. Every departure from the upstream
-starter is listed as it lands.
+starter is listed.
 
-| Milestone | State |
-|---|---|
-| RW0 — the spec | ✅ merged (sourceplane/redwoodsdk-starter#1) |
-| RW1 — the RedwoodSDK app on Workers | ✅ merged (sourceplane/redwoodsdk-starter#2) |
-| RW2 — the D1 database | ✅ merged (sourceplane/redwoodsdk-starter#3) |
-| RW3 — ready to instantiate | In progress (sourceplane/redwoodsdk-starter#4) |
-| RW4 — a baseline | Not started |
+| Milestone | Pull request | State |
+|---|---|---|
+| RW0 — the spec | sourceplane/redwoodsdk-starter#1 | ✅ merged |
+| RW1 — the RedwoodSDK app on Workers | sourceplane/redwoodsdk-starter#2 | ✅ merged |
+| RW2 — the D1 database | sourceplane/redwoodsdk-starter#3 | ✅ merged |
+| RW3 — ready to instantiate | sourceplane/redwoodsdk-starter#4 | ✅ merged |
+| RW4 — a baseline | sourceplane/redwoodsdk-starter#5 | ✅ merged; `baseline-v1` |
 
 ## Departures from upstream (`redwoodjs/sdk › starter` at `c221073`)
 
@@ -26,3 +26,15 @@ starter is listed as it lands.
 | `dev:init`, `generate`, `release`, `worker:run`, `check`, `types` scripts | `dev`, `build`, `preview`, `typecheck`, `lint`, `wire:fixture`, `db:migrate:local` | The pipeline builds, checks and deploys; `dev:init` would run `npm` inside a pnpm workspace on a fresh checkout |
 | `worker-configuration.d.ts` generated with `ASSETS` | Written by hand with `ASSETS` and `DB` | The binding the app reads |
 | The passkey addon (optional) | Not included | Durable Objects (risk RW-B) |
+
+## Proven
+
+- Offline, in Baseline CI: the contract tiers, the generated component docs,
+  the blueprint read by the pinned orun, the leak gate, the offline bootstrap
+  with the product's own plan (cloudflare-d1 → db-migrate → web on main), and
+  the end-to-end tier — the stage lanes' steps in the staged tree, the
+  migrations against a stand-in D1 API, and the built Worker served: the
+  notice and a 503 before the schema, the smoke after it, a note added and
+  removed through the page's own server functions, a cross-origin call
+  refused.
+- Not yet live (risk RW-A).
