@@ -6,8 +6,8 @@ starter is listed as it lands.
 | Milestone | State |
 |---|---|
 | RW0 — the spec | ✅ merged (sourceplane/redwoodsdk-starter#1) |
-| RW1 — the RedwoodSDK app on Workers | In progress (sourceplane/redwoodsdk-starter#2) |
-| RW2 — the D1 database | Not started |
+| RW1 — the RedwoodSDK app on Workers | ✅ merged (sourceplane/redwoodsdk-starter#2) |
+| RW2 — the D1 database | In progress (sourceplane/redwoodsdk-starter#3) |
 | RW3 — ready to instantiate | Not started |
 | RW4 — a baseline | Not started |
 
