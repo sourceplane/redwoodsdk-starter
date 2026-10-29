@@ -1,0 +1,30 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: RW-5
+  title: "A baseline"
+spec:
+  goal: redwoodsdk-starter becomes an Orun baseline — a console card and a build document that take a new site from nothing to live on stage and prod in one landing, then record what went live — proven by Baseline CI
+  affects:
+    - blueprint.yaml
+    - repo-blueprint.yaml
+    - BOOTSTRAP.md
+    - .baseline
+    - ai
+    - docs
+    - hooks
+    - testing
+    - tooling
+    - .github/workflows/baseline.yml
+    - .github/workflows/tag.yml
+    - apps
+    - infra
+    - packages
+    - tests
+    - specs
+    - README.md
+  doneWhen:
+    - Baseline CI is green on main
+    - a placed product carries the site only, renamed throughout, with RedwoodSDK's own names and the starter's MIT licence intact
+    - baseline-v1 is cut by tag.yml
+  gates: []

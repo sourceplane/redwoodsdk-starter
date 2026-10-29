@@ -1,0 +1,16 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: RW-3
+  title: "The D1 database"
+spec:
+  goal: One Cloudflare D1 database per deployed environment from Terraform, its wiring published, and its schema applied by db-migrate between the apply and the Worker's deploy
+  affects:
+    - infra/terraform/cloudflare-d1
+    - infra/db-migrate
+    - apps/web/component.yaml
+    - README.md
+  doneWhen:
+    - terraform validate passes for the root
+    - orun plan on a push to main orders cloudflare-d1, then db-migrate, then web, per environment; on a pull request every edge is advisory
+  gates: []
