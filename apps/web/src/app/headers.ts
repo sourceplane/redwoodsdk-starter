@@ -23,9 +23,15 @@ export const setCommonHeaders =
       "geolocation=(), microphone=(), camera=()",
     );
 
-    // Defines trusted sources for content loading and script execution:
+    // Defines trusted sources for content loading and script execution.
+    // `frame-ancestors 'self'` everywhere but the dev server: orun.work's live
+    // Preview tab frames `vite dev` from the preview's own host, which
+    // 'self' refuses. A build is never the dev server, so production keeps it.
+    const frameAncestors = import.meta.env.VITE_IS_DEV_SERVER
+      ? ""
+      : " frame-ancestors 'self';";
     response.headers.set(
       "Content-Security-Policy",
-      `default-src 'self'; script-src 'self' 'unsafe-eval' 'nonce-${nonce}' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'self'; frame-src 'self' https://challenges.cloudflare.com; object-src 'none';`,
+      `default-src 'self'; script-src 'self' 'unsafe-eval' 'nonce-${nonce}' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;${frameAncestors} frame-src 'self' https://challenges.cloudflare.com; object-src 'none';`,
     );
   };
